@@ -17,6 +17,7 @@ class Particle {
     // ### PUBLIC FUNCTIONS ### //
         
         // Method for calculating the force of gravity between two Particle objects
+        // And then adding that force to the total force of the system
         void calculateForce(const Particle&);
         // Method for updating the current coordinates according to the forces of gravity
         void update(const double&);
@@ -28,9 +29,11 @@ class Particle {
 
     // ### SETTERS ### //
 
+        void resetTotalForce();
         void setCoordinates(double, double);
         void setMass(double);
         void setVelocity(double, double);
+        void setRadius(float);
 
     // ### OPERATOR OVERLOADING, FRIEND CLASSES ### //
 
@@ -39,7 +42,7 @@ class Particle {
         bool operator== (const Particle&);
         // Compares two particles by ID
         bool operator!= (const Particle&);
-        // Compares two particles by masses
+        // Compares two particles by mass and radius
         bool operator>= (const Particle&);
 
     private:
@@ -52,7 +55,7 @@ class Particle {
         double vel_x, vel_y;
         double force_x, force_y;
         double mass;
-        double radius;
+        float radius;
         
     // ### PRIVATE FUNCTIONS ### //
 

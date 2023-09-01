@@ -25,9 +25,8 @@ void Particle::calculateForce(const Particle& otherParticle) {
     // when callculating the force
     double distance = distance_x * distance_x + distance_y * distance_y;
 
-    // Calculating the force of graviy, the formula lacks the mass of this particle object,
-    // but it's because it would cancel itself later on in the calculations
-    force = (G * otherParticle.mass) / distance;
+    // Calculating the force of graviy
+    force = (G * otherParticle.mass * this->mass) / (distance);
 
     // We're calculating the actual force of gravity between two particles by drawing a right triangle
     // with the known distance and two force components Fx, Fy in the x and y direction
@@ -35,35 +34,47 @@ void Particle::calculateForce(const Particle& otherParticle) {
     double angle = atan2(distance_y, distance_x);
 
     // Then, using that angle, force of gravity F (hypotenuse) and some trigonometry we can calculate 
-    // the Fx and Fy components of the force to determine our velocity in the x and y direction 
-    this->vel_x += cos(angle) * force;
-    this->vel_y += sin(angle) * force; // TU RÓWNA SIE? a nie plus równa sie
+    // the Fx and Fy total force components to determine our velocity in the x and y direction 
+    this->force_x += cos(angle) * force;
+    this->force_y += sin(angle) * force;
+
+    // Now, we can calculate the actual velocity of this object in the x and y directons using a = F / m
+    this->vel_x += this->force_x / this->mass;
+    this->vel_y += this->force_y / this->mass;
 
 }
-// A = F/m i ta masa sie skróciła SPRÓBUJ DODAĆ MASE DO FORCE I TU TEŻ BO MOŻE ZŁE OBLICZENIA
 void Particle::update(const double& STEP) {
-    // obejrzyj filmik jeszcze raz i to zobacz
-    // tu przed tym velx += total fx / masa * step
+    // Updating the current position of the object by the current velocity multiplied by TIMESTEP (for slowing or speeding up the simulation)
     this->x_ += this->vel_x * STEP;
     this->y_ += this->vel_y * STEP;
 }
-//dodaj rozbicie na kilka nowych
+// TODO: rozbicia na kilka cząsteczek przy podobnych masach
 void Particle::handleCollision(Particle& otherParticle) {
+    // Increase the radius on collision while less than 180, 180 being approximately the maximum radius of POINTS on my machine
     if(radius < 180)
         this->radius++;
-    this->mass += otherParticle.mass / 2;
-    this->vel_x = (otherParticle.vel_x * otherParticle.mass + this->vel_x * this->mass) / (this->mass + otherParticle.mass);
-    this->vel_y = (otherParticle.vel_y * otherParticle.mass + this->vel_y * this->mass) / (this->mass + otherParticle.mass);
+    // Add the masses of two colliding objects 
+    this->mass += otherParticle.mass;
+    // Calculate the momentum after impact
+    this->vel_x = (this->force_x + otherParticle.force_x) / (this->mass + otherParticle.mass);
+    this->vel_y = (this->force_x + otherParticle.force_x) / (this->mass + otherParticle.mass);
+    // this->vel_x = (otherParticle.vel_x * otherParticle.mass + this->vel_x * this->mass) / (this->mass + otherParticle.mass);
+    // this->vel_y = (otherParticle.vel_y * otherParticle.mass + this->vel_y * this->mass) / (this->mass + otherParticle.mass);
 }
 
 bool Particle::checkCollision(const Particle& otherParticle) const{
     return (
-        abs(otherParticle.x_ - this->x_) <= radius / 4 &&
-        abs(otherParticle.y_ - this->y_) <= radius / 4
+        abs(otherParticle.x_ - this->x_) <= radius / 3  &&
+        abs(otherParticle.y_ - this->y_) <= radius / 3 
     );
 }
 
 // ### SETTERS ### //
+
+void Particle::resetTotalForce() {
+    this->force_x = 0;
+    this->force_y = 0;
+}
 
 void Particle::setCoordinates(double x, double y) {
     this->x_ = x;
@@ -78,6 +89,10 @@ void Particle::setMass(double mass) {
 void Particle::setVelocity(double vel_x, double vel_y) {
     this->vel_x = vel_x;
     this->vel_y = vel_y;
+}
+ 
+void Particle::setRadius(float radius) {
+    this->radius = radius;
 }
 
 // ### PRIVATE FUNCTIONS ### //
@@ -105,5 +120,5 @@ bool Particle::operator!=(const Particle& toCompare) {
 }
 
 bool Particle::operator>=(const Particle& toCompare) {
-    return (this->mass >= toCompare.mass);
+    return ((this->mass * this->radius) >= (toCompare.mass * toCompare.radius));
 }

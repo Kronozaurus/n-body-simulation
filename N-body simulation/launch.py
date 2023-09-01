@@ -7,6 +7,8 @@ lib_dir = "dependencies/lib"
 lib = "-lglfw3 -lglew32s -lopengl32 -lgdi32"
 preprocessor = "-DGLEW_STATIC"
 
+# This file acts as a makefile and compiles the whole project
+
 def main():
     # compile
     subprocess.call(f"g++ -c main.cpp simulation.cpp particle.cpp -I {include_dir}")
