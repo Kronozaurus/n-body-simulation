@@ -1,3 +1,7 @@
+## ABOUT 
+
+This is a simple n-body/gravity simulation made in C++ using openGL. Since this is a fun side project of mine, the physics implemented are simple, so this is not an 100% accurate simulation. 
+
 ## HOW TO COMPILE THE PROJECT 
 
 1. Open launch.py and run the script.
