@@ -1,5 +1,5 @@
 // ### simplified N-body simulator made with OpenGL ### //
-// ### Jordan Szymański, Piotr Pankowski ### //
+// ### Jordan Szymański ### //
 
 #include "simulation.h"
 
